@@ -12,7 +12,6 @@ final class HomeInteractor: HomeInteractorProtocol {
     weak var delegate: HomeInteractorDelegate?
     private let network: NetworkService
     private var pokemons: [PokemonDetail] = []
-    private var displayablePokemons: [PokemonViewModel] = []
     
     init(network: NetworkService) {
         self.network = network
@@ -31,7 +30,7 @@ final class HomeInteractor: HomeInteractorProtocol {
         }
     }
     
-    func loadDetail(_ pokeNames: [Pokemon]) {
+    private func loadDetail(_ pokeNames: [Pokemon]) {
         let group = DispatchGroup()
         pokeNames.forEach { pokemon in
             group.enter()
@@ -48,30 +47,15 @@ final class HomeInteractor: HomeInteractorProtocol {
             }
         }
         group.notify(queue: .main) {
-            self.mapToViewModel()
+            self.delegate?.handleOutput(.displayItems(self.pokemons))
+            self.delegate?.handleOutput(.isLoading(false))
+
         }
-    }
-    
-    func mapToViewModel() {
-        let viewModels = pokemons.map({ PokemonViewModel(
-            name: $0.name,
-            imageURL: (URL(string: $0.sprites.frontDefault) ?? URL(string: "any-url.com"))!,
-            abilities: $0.abilities.map { $0.ability.name }
-        )})
-        displayablePokemons = viewModels
-        delegate?.handleOutput(.displayItems(viewModels))
-        delegate?.handleOutput(.isLoading(false))
     }
         
     func selectItem(at index: Int) {
-        let selectedPokemon = displayablePokemons[index]
+        let selectedPokemon = pokemons[index]
         delegate?.handleOutput(.displayDetailItem(selectedPokemon))
     }
     
-}
-
-struct PokemonViewModel {
-    let name: String
-    let imageURL: URL
-    let abilities: [String]
 }

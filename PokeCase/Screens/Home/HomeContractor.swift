@@ -15,8 +15,8 @@ protocol HomeInteractorProtocol: AnyObject {
 
 enum HomeInteractorOutput {
     case isLoading(Bool)
-    case displayItems([PokemonViewModel])
-    case displayDetailItem(PokemonViewModel)
+    case displayItems([PokemonDetail])
+    case displayDetailItem(PokemonDetail)
 }
 
 protocol HomeInteractorDelegate: AnyObject {
