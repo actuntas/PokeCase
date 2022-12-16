@@ -49,7 +49,6 @@ final class HomeInteractor: HomeInteractorProtocol {
         group.notify(queue: .main) {
             self.delegate?.handleOutput(.displayItems(self.pokemons))
             self.delegate?.handleOutput(.isLoading(false))
-
         }
     }
         
