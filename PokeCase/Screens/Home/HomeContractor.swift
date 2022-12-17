@@ -26,12 +26,14 @@ protocol HomeInteractorDelegate: AnyObject {
 protocol HomePresenterProtocol: AnyObject {
     func load()
     func selectItem(at index: Int)
+    func pokemon(at index: Int) -> PokemonViewModel
+    var numberOfRowsInSection: Int { get }
 }
 
 enum HomePresenterOutput {
     case updateTite(String)
     case isLoading(Bool)
-    case displayItems([PokemonViewModel])
+    case displayItems
 }
 
 protocol HomeViewProtocol: AnyObject {

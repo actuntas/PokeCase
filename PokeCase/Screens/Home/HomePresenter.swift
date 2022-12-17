@@ -12,6 +12,7 @@ final class HomePresenter: HomePresenterProtocol {
     private weak var view: HomeViewProtocol?
     private let interactor: HomeInteractorProtocol
     private let router: HomeRouterProtocol
+    private var pokemons: [PokemonViewModel] = []
     
     init(view: HomeViewProtocol, interactor: HomeInteractorProtocol, router: HomeRouterProtocol) {
         self.view = view
@@ -29,8 +30,8 @@ final class HomePresenter: HomePresenterProtocol {
         interactor.selectItem(at: index)
     }
     
-    private func mapToViewModel(rawPokemons: [PokemonDetail]) -> [PokemonViewModel] {
-        return rawPokemons.map({ PokemonViewModel(
+    private func mapToViewModel(rawPokemons: [PokemonDetail]) {
+        self.pokemons = rawPokemons.map({ PokemonViewModel(
             name: $0.name,
             imageURL: (URL(string: $0.sprites.frontDefault) ?? URL(string: "any-url.com"))!,
             abilities: $0.abilities.map { $0.ability.name }
@@ -46,13 +47,23 @@ extension HomePresenter: HomeInteractorDelegate {
             case .isLoading(let isLoading):
                 self.view?.handleOutput(.isLoading(isLoading))
             case .displayItems(let pokemons):
-                let displayablePokemons = self.mapToViewModel(rawPokemons: pokemons)
-                self.view?.handleOutput(.displayItems(displayablePokemons))
+                self.mapToViewModel(rawPokemons: pokemons)
+                self.view?.handleOutput(.displayItems)
             case .displayDetailItem(let pokemon):
-                guard let displayablePokemon = self.mapToViewModel(rawPokemons: [pokemon]).first else { return }
-                self.router.navigate(to: .detail(displayablePokemon))
+                guard let selectedPokemon = self.pokemons.first(where: { $0.name == pokemon.name}) else { return }
+                self.router.navigate(to: .detail(selectedPokemon))
             }
         }
+    }
+}
+
+extension HomePresenter {
+    var numberOfRowsInSection: Int {
+        pokemons.count
+    }
+    
+    func pokemon(at index: Int) -> PokemonViewModel {
+        pokemons[index]
     }
 }
 

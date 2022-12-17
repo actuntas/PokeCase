@@ -11,7 +11,6 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    private var pokemons: [PokemonViewModel] = []
     var presenter: HomePresenterProtocol!
     
     override func viewDidLoad() {
@@ -27,8 +26,7 @@ extension HomeViewController: HomeViewProtocol {
             self.title = title
         case .isLoading(let isLoading):
             isLoading ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
-        case .displayItems(let pokemons):
-            self.pokemons = pokemons
+        case .displayItems:
             self.tableView.reloadData()
         }
     }
@@ -36,12 +34,12 @@ extension HomeViewController: HomeViewProtocol {
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        pokemons.count
+        presenter.numberOfRowsInSection
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: HomeCell = tableView.dequeue(at: indexPath)
-        let pokemon = pokemons[indexPath.row]
+        let pokemon = presenter.pokemon(at: indexPath.row)
         cell.populate(with: pokemon)
         return cell
     }
