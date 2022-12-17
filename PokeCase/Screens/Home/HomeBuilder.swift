@@ -16,6 +16,7 @@ final class HomeBuilder {
         let network = DefaultNetworkService()
         let interactor = HomeInteractor(network: network)
         let presenter = HomePresenter(view: view, interactor: interactor, router: router)
+        interactor.delegate = presenter
         view.presenter = presenter
         
         return view

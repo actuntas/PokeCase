@@ -18,7 +18,6 @@ final class HomePresenter: HomePresenterProtocol {
         self.view = view
         self.interactor = interactor
         self.router = router
-        interactor.delegate = self
     }
     
     func load() {
